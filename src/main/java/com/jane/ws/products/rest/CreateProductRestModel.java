@@ -1,4 +1,4 @@
-package com.jane.ws.rest;
+package com.jane.ws.products.rest;
 
 import java.math.BigDecimal;
 
