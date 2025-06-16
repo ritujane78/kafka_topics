@@ -20,26 +20,43 @@ public class ProductServiceImpl implements ProductService{
         this.kafkaTemplate = kafkaTemplate;
     }
     @Override
-    public String createProduct(CreateProductRestModel productRestModel) {
+    public String createProduct(CreateProductRestModel productRestModel) throws Exception{
         String productId = UUID.randomUUID().toString();
 
         ProductCreatedEvent productCreatedEvent = new ProductCreatedEvent(productId,
                 productRestModel.getTitle(),
                 productRestModel.getPrice(), productRestModel.getQuantity()
         );
-        CompletableFuture<SendResult<String, ProductCreatedEvent>> future =
-                kafkaTemplate.send("products-created-events-topic", productId, productCreatedEvent);
+        LOGGER.info("Before publishing a ProductRecordEvent");
+//        ************************** Synchronous**********************
 
-        future.whenComplete((result, exception) -> {
-            if(exception != null){
-                LOGGER.error("********Failed to send Message: " + exception.getMessage());
-            } else{
-                LOGGER.info("********Message sent successfully: " + result.getRecordMetadata());
-            }
-        });
-        LOGGER.info("********************** Returning Product ID");
-        // for synchronous style
+        SendResult<String, ProductCreatedEvent> result =
+                kafkaTemplate.send("products-created-events-topic", productId, productCreatedEvent).get();
+
+//        **************************************************************
+
+//        ************ Asynchronous **********************
+//        CompletableFuture<SendResult<String, ProductCreatedEvent>> future =
+//                kafkaTemplate.send("products-created-events-topic", productId, productCreatedEvent);
+//
+//        future.whenComplete((result, exception) -> {
+//            if(exception != null){
+//                LOGGER.error("********Failed to send Message: " + exception.getMessage());
+//            } else{
+//                LOGGER.info("********Message sent successfully: " + result.getRecordMetadata());
+//            }
+//        });
+
+//        ********************************************
+
+//        *************synchronous************
 //        future.join();
+//        ************************************
+
+        LOGGER.info("Partition: " + result.getRecordMetadata().partition());
+        LOGGER.info("Topic: " + result.getRecordMetadata().topic());
+        LOGGER.info("Offset: " + result.getRecordMetadata().offset());
+        LOGGER.info("********************** Returning Product ID");
         return productId;
     }
 }
