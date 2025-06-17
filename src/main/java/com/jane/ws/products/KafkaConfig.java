@@ -1,7 +1,7 @@
 package com.jane.ws.products;
 
 
-import com.jane.ws.products.service.ProductCreatedEvent;
+import com.jane.ws.core.ProductCreatedEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,11 +25,11 @@ public class KafkaConfig {
     private String valueSerializer;
     @Value("${spring.kafka.producer.acks}")
     private String acks;
-    @Value("${spring.kafka.producer,properties.delivery.timeout.ms}")
+    @Value("${spring.kafka.producer.properties.delivery.timeout.ms}")
     private String deliveryTimeout;
-    @Value("${spring.kafka.producer,properties.linger.ms}")
+    @Value("${spring.kafka.producer.properties.linger.ms}")
     private String linger;
-    @Value("${spring.kafka.producer,properties.request.timeout.ms}")
+    @Value("${spring.kafka.producer.properties.request.timeout.ms}")
     private String requestTimeout;
 
     @Value("${spring.kafka.producer.properties.enable.idempotence}")
