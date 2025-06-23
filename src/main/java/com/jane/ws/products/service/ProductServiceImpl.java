@@ -2,12 +2,14 @@ package com.jane.ws.products.service;
 
 import com.jane.ws.core.ProductCreatedEvent;
 import com.jane.ws.products.rest.CreateProductRestModel;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,8 +33,16 @@ public class ProductServiceImpl implements ProductService{
         LOGGER.info("Before publishing a ProductRecordEvent");
 //        ************************** Synchronous**********************
 
+
+        ProducerRecord<String, ProductCreatedEvent> record = new ProducerRecord<>(
+                "products-created-events-topic",
+                productId,
+                productCreatedEvent
+        );
+        record.headers().add("messageId", UUID.randomUUID().toString().getBytes());
+
         SendResult<String, ProductCreatedEvent> result =
-                kafkaTemplate.send("products-created-events-topic", productId, productCreatedEvent).get();
+                kafkaTemplate.send(record).get();
 
 //        **************************************************************
 
