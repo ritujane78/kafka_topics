@@ -60,7 +60,7 @@ public class ProductsServiceIntegrationTest {
     void setUp() {
         DefaultKafkaConsumerFactory<String, Object> consumerFactory = new DefaultKafkaConsumerFactory<>(getConsumerProperties());
 
-            ContainerProperties containerProperties = new ContainerProperties(environment.getProperty("products-created-events-topic-name"));
+        ContainerProperties containerProperties = new ContainerProperties(environment.getProperty("products-created-events-topic-name"));
         container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
         records = new LinkedBlockingQueue<>();
         container.setupMessageListener((MessageListener<String, ProductCreatedEvent>) records::add);
